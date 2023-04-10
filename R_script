@@ -4,7 +4,7 @@
 # 2Functional Forest Ecology, Universität Hamburg, Barsbüttel 22885, Germany
 
 ## setting up the working directory
-setwd("C:/Users/khokon/Desktop/PhD/GitHub_Anis_Khokon")
+setwd("C:/Users/khokon/Desktop/15N_revision_2nd round/GitHub_Anis_Khokon")
 rm(list=ls())
 
 ## load packages 
@@ -32,12 +32,11 @@ rm(list=ls())
 dat_box<-read.table(file="15N in different root segments.txt",head=T,sep="\t")
 
 library(ggplot2)
-library(gridExtra)
 library(grid)
 library(emmeans)
-library(nlme)
 library(ggpubr)
 library(dplyr)
+
 ###
 AM <-dat_box[dat_box$Treatment=="15N-NH4+",]
 NI <-dat_box[dat_box$Treatment=="15N-NO3-",]
@@ -80,9 +79,9 @@ all.plot <- ggarrange(AM_plot, NI_plot,
                       ncol = 2, nrow = 1, legend="none", font.label = list(size = 15))
 all.plot
 
-tiff(filename="v3_Repeated for paper_15N in different root segments v3.tiff",width=2200,height=1000,res=300)
-all.plot
-dev.off()
+#tiff(filename="v3_Repeated for paper_15N in different root segments v3.tiff",width=2200,height=1000,res=300)
+#all.plot
+#dev.off()
 
 #### Figure 2 : 15N enrichment in EMF species ##### 
 ### used BExIS dataset: 31082
@@ -102,7 +101,8 @@ library(tidyverse)
 
 ###Data read 
 rm(list=ls())
-All<-read.table(file="15N_enrichment_EMF.txt",head=T,sep="\t")
+All<-read.table(file="15N_enrichment_EMF_revision_2nd.txt",head=T,sep="\t")
+
 All_summary <- summarySE(All, measurevar="Enrichment_EMF", groupvars=c("Species","Treatment","Season"))
 
 #write.csv(All_summary,file = "mean_15N_enrichment_ECMF.csv")
@@ -119,9 +119,13 @@ plot <- ggplot(data=means, aes(x=Species, y=mean, fill=Treatment)) +
   geom_bar(stat="identity") +  
   facet_wrap(~ Season)+
   labs(x=expression(paste()),
-       y=expression(paste("",""^15, "N Enrichment (µg ",g^{-1},"DW)")))+ 
+       y=expression(paste("",""^15, "N enrichment (µg ",g^{-1},"DW)")))+ 
   scale_fill_manual(breaks = c("15NH4", "15NO3"),values = c("steelblue"," black"),labels=c(expression(paste("",""^15,,"NH"[4]^ +{})), expression(paste("",""^15,,"NO"[3]^ -{}))))+
-  coord_flip()
+  coord_flip()+
+  scale_x_discrete(limits = rev(levels(All$Species)))
+
+#### reverse axis labels ###### 
+
 plot
 
 # Calc SEM  
@@ -150,9 +154,9 @@ p1<-plotSEM+
   theme(panel.background = element_blank(),panel.grid.minor = element_blank())
 p1
 
-tiff(filename="repeat_stack 15N enrichment in ECMF Species with SEM.tiff",width=4000,height=3500,res=300)
-p1 
-dev.off()
+#tiff(filename="Figure 02.tiff",width=4000,height=3500,res=300)
+#p1 
+#dev.off()
 
 
 ### Figure 3: EM diversity and N uptake ####
@@ -228,9 +232,9 @@ all.plot
 
 
 # save the p1 plot in a file (run all three lines together)
-tiff(filename="cor_transport and entire root systems.tiff",width=2500,height=1200,res=300)
-all.plot
-dev.off()
+#tiff(filename="cor_transport and entire root systems.tiff",width=2500,height=1200,res=300)
+#all.plot
+#dev.off()
 
 # Figure 3. correlation statistics #
 ##transport root  
@@ -247,7 +251,7 @@ cor.test(dat_nitrate$Shannon_H, dat_nitrate$Total.log.enrichment_15N) ##p = 2.49
 rm(list=ls())
 
 # read in data
-dat<-read.table(file="repeat_LASSO.txt",head=T,sep="\t")
+dat<-read.table(file="repeat_LASSO.txt",head=T,sep="\t",fileEncoding = "Latin1")
 A<-dat[dat$Treatment=="15NH4",]
 N<-dat[dat$Treatment=="15NO3",]
 NT<-N[,c(9,16:68)]
@@ -268,9 +272,9 @@ lasso_reg_NT<-cv.glmnet(as.matrix(NT[,2:ncol(NT)]),NT$X15N.enrichment_Transport.
 # plot log(lambda) against model error
 plot(lasso_reg_NT, cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
 
-tiff(filename="transport_nitrate.tiff",width=3200,height=2800,res=300)
-plot(lasso_reg_NT, cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
-dev.off()
+#tiff(filename="transport_nitrate.tiff",width=3200,height=2800,res=300)
+#plot(lasso_reg_NT, cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
+#dev.off()
 
 # extract best lambda
 lambda_best_NT <- lasso_reg_NT$lambda.min
@@ -287,9 +291,9 @@ set.seed(123)
 lasso_reg_AT<-cv.glmnet(as.matrix(AT[,2:ncol(AT)]),AT$X15N.enrichment_Transport..µg.g.DW.,alpha=1,lambda=lambdas,standardize=TRUE,nfolds=10)
 plot(lasso_reg_AT,cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
 
-tiff(filename="transport_ammonium.tiff",width=3200,height=2800,res=300)
-plot(lasso_reg_AT, cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
-dev.off()
+#tiff(filename="transport_ammonium.tiff",width=3200,height=2800,res=300)
+#plot(lasso_reg_AT, cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
+#dev.off()
 
 lambda_best_AT <- lasso_reg_AT$lambda.min
 lambda_best_AT
@@ -302,9 +306,9 @@ set.seed(123)
 lasso_reg_NR<-cv.glmnet(as.matrix(NR[,2:ncol(NR)]),NR$X15N_enrichment_whole.root..µg.g.DW.,alpha=1,lambda=lambdas,standardize=TRUE,nfolds=10)
 plot(lasso_reg_NR,cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
 
-tiff(filename="transport_ammonium.tiff",width=3200,height=2800,res=300)
-plot(lasso_reg_AT, cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
-dev.off()
+#tiff(filename="transport_ammonium.tiff",width=3200,height=2800,res=300)
+#plot(lasso_reg_AT, cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
+#dev.off()
 
 lambda_best_NR <- lasso_reg_NR$lambda.min
 lambda_best_NR
@@ -353,7 +357,7 @@ plot(lasso_reg_NR)
 dev.off()
 
 #### Supplement figures ####
-## Supplement Figure S2a: Relative abundance EMF ####
+## Supplement Figure S3a: Relative abundance EMF ####
 ### used BExIS dataset: 31078
 rm(list=ls())
 RA<-read.table(file="Relative abundance.txt",head=T,sep="\t")
@@ -401,14 +405,98 @@ tiff(filename="RA of the ECMF species v3.tiff",width=5500,height=3500,res=300)
 p3
 dev.off()
 
-### Supplement Figure S2b ####
-# NMDS plot of the EM assemblages in NH4 and NO3 treatment groups#### 
+### Supplement Figure S3b ####
+# NMDS plot
 ### used BExIS dataset: 31078
+rm(list=ls())
 library(vegan)
 library(devEMF)
-
+library(ggplot2)
+library(permute)
 ##load the data 
-dat<-read.table(file="15N_dataset_review.txt",head=T,sep="\t")
+dat<-read.table(file="NMDS.txt",head=T,sep="\t")
+
+##EM community data 
+data_comm <-dat[,3:55] # subset: only the fungi count data
+env <- dat [,1:2]
+
+# calculate NMDS:
+#N <-metaMDS(data_comm, distance = "bray", autotransform = FALSE,trymax = 200, k =2)
+N<-metaMDS(data_comm,k=2,trymax=200,trace=F,autotransform=FALSE,distance="bray")
+
+# check analysis:
+N #stress = 0.20
+
+# set up color vector for 122 plots:
+cols<-c(rep("#009E73",63),rep("#E69F00",59))
+shape <- c(rep(16,27),rep(15,18),rep(17,18),rep(16,23),rep(15,18),rep(17,18))
+
+## standard plot 
+#par(mfrow=c(1,2)) # display two graphs side by side
+#ordiplot(N, type = "n",xlim=c(-1,1)) # create empty plot
+#points(N,display = "sites", pch = shape, col = cols, cex =1.5) # add plots, colored by treatment
+## legend 
+#legend("bottomleft", legend = c("HAI SP", "HAI SU", "HAI AU", "SCH SP", "SCH SU", "SCH AU"), 
+      # pch = c(16,15,17,16,15,17), col = c("#009E73", "#009E73","#009E73","#E69F00","#E69F00","#E69F00"), 
+     #  bty= "n", cex =1.3)
+
+
+ordiplot(N, type = "n",xlim=c(-1,1)) # create empty plot
+points(N,display = "sites", pch = shape, col = cols, cex =1.5) # add plots, colored by treatment
+orditorp(N, display = "species", col = "black", air = 0.01) # add species
+legend("bottomleft", legend = c("HAI SP", "HAI SU", "HAI AU", "SCH SP", "SCH SU", "SCH AU"), 
+       pch = c(16,15,17,16,15,17), col = c("#009E73", "#009E73","#009E73","#E69F00","#E69F00","#E69F00"), 
+       bty= "n", cex =1.3)
+
+# save the p1 plot in a file (run all three lines together)
+tiff(filename="NMDS.tiff",width=2500,height=2100,res=300)
+ordiplot(N, type = "n",xlim=c(-1,1)) # create empty plot
+points(N,display = "sites", pch = shape, col = cols, cex =1.3) # add plots, colored by treatment
+orditorp(N, display = "species", col = "black", air = 0.01) # add species
+ordiplot(N, type = "n",xlim=c(-1,1)) # create empty plot
+points(N,display = "sites", pch = shape, col = cols, cex =1.5) # add plots, colored by treatment
+orditorp(N, display = "species", col = "black", air = 0.01) # add species
+legend("bottomleft", legend = c("HAI SP", "HAI SU", "HAI AU", "SCH SP", "SCH SU", "SCH AU"), 
+       pch = c(16,15,17,16,15,17), col = c("#009E73", "#009E73","#009E73","#E69F00","#E69F00","#E69F00"), 
+       bty= "n", cex =1.3)
+dev.off()
+
+## ANOSIM statistics 
+## between regions
+ano = anosim(data_comm, dat$Region,distance = "bray", permutations = 9999)
+ano # ANOSIM statistic R: 0.03924 , # Significance: 0.007 
+
+## between seasons
+ano = anosim(data_comm, dat$Season, distance = "bray", permutations = 9999)
+ano  # ANOSIM statistic R: 0.3348 , #Significance: 1e-04 
+
+## among season in each region 
+dat_HAI <- dat[dat$Region == "HEW",]
+dat_SCH <- dat[dat$Region == "SEW",]
+
+
+##EM community data 
+data_comm_HAI <-dat_HAI[,3:55] # subset: only the fungi count data
+env_HAI <- dat_HAI [,1:2]
+
+data_comm_SCH <-dat_SCH[,3:55] # subset: only the fungi count data
+env_SCH <- dat_SCH [,1:2]
+
+## ANOSIM 
+## among season in HAI 
+ano.HAI = anosim(data_comm_HAI, env_HAI$Season, distance = "bray", permutations = 9999)
+ano.HAI
+
+## among season in SCH 
+ano.SCH = anosim(data_comm_SCH, env_SCH$Season, distance = "bray", permutations = 9999)
+ano.SCH
+
+### Supplement figure S5 #### 
+##calculate Bray Curtis dissimilarity ####
+### used BExIS dataset: 31078 and 31080
+library (vegan)
+##load data
+dat<-read.table(file="15N_dataset_review.txt",head=T,sep="\t",fileEncoding = "Latin1")
 
 ##EM community data 
 data_comm <-dat[,62:114] # subset: only the fungi count data
@@ -417,23 +505,106 @@ data_comm <-dat[,62:114] # subset: only the fungi count data
 Ammonium <-dat[dat$Treatment=="15NH4",]
 Nitrate <-dat[dat$Treatment=="15NO3",]
 
-# calculate NMDS:
-N<-metaMDS(data_comm,k=2,trymax=200,trace=F,autotransform=FALSE,distance="bray")
-# check analysis:
-N
+Amm_abund <- decostand (Ammonium[,62:114], method = 'hellinger')
+Nit_abund <- decostand (Nitrate[,62:114], method = 'hellinger')
 
-# set up color vector for 122 plots:
-cols<-c(rep("steelblue",62),rep("black",60))
-ordiplot(N, type = "n",xlim=c(-1,1)) # create empty plot
-points(N,display = "sites", pch = 16, col = cols,cex=1.5) # add plots, colored by treatment
-orditorp(N, display = "species", col = "black", air = 0.01) # add specie
+#abundance data frame - bray curtis dissimilarity
+Amm.dist.abund = vegdist(Amm_abund, method = "bray")
+Amm.abund = as.vector(Amm.dist.abund)
+write.csv(Amm.abund,"Bray_curtis_dis_Amm_abund.csv")
 
-ano = anosim(data_comm, dat$Treatment, distance = "bray", permutations = 9999)
-ano
+Nit.dist.abund = vegdist(Nit_abund, method = "bray")
+Nit.abund = as.vector(Nit.dist.abund)
+write.csv(Nit.abund,"Bray_curtis_dis_Nit_abund.csv")
 
-#stress = 0.20
-#ANOSIM statistic R = -0.009284 
-# p = 0.841 
+#environmental vector - euclidean distance
+Amm.dist.transport = vegdist(Ammonium$Transport_15N.enrichment, method = "euclidean")
+A_T = as.vector(Amm.dist.transport)
+write.csv(A_T,"Bray_curtis_dis_A_T.csv")
+
+Amm.dist.whole = vegdist(Ammonium$Whole.root_N.uptake, method = "euclidean")
+A_whole = as.vector(Amm.dist.whole)
+write.csv(A_whole,"Bray_curtis_dis_A_whole.csv")
+
+Nit.dist.transport = vegdist(Nitrate$Transport_15N.enrichment, method = "euclidean")
+N_T = as.vector(Nit.dist.transport)
+write.csv(N_T,"Bray_curtis_dis_N_T_log.csv")
+
+Nit.dist.whole = vegdist(Nitrate$Whole.root_N.uptake, method = "euclidean")
+N_whole = as.vector(Nit.dist.whole)
+write.csv(N_whole,"Bray_curtis_dis_N_whole.csv")
+
+#Ammonium and nitrate abundance vs n uptake  
+abund_A_T = mantel(Amm.dist.transport, Amm.dist.abund, method = "spearman", permutations = 9999, na.rm = TRUE)
+abund_A_T
+
+abund_A_whole = mantel(Amm.dist.whole, Amm.dist.abund, method = "spearman", permutations = 9999, na.rm = TRUE)
+abund_A_whole
+
+abund_N_T = mantel(Nit.dist.transport, Nit.dist.abund, method = "spearman", permutations = 9999, na.rm = TRUE)
+abund_N_T
+
+abund_N_whole = mantel(Nit.dist.whole, Nit.dist.abund, method = "spearman", permutations = 9999, na.rm = TRUE)
+abund_N_whole
+
+##plot Bray-Curtis Dissimilarity and 15N enrichment distance ####
+dat_bray_N <-read.table(file="Bray_N_uptake.txt",head=T,sep="\t")
+
+Plot_Transport <-ggplot(dat_bray_N, aes(x=dat_bray_N$Bray_dis, y=dat_bray_N$Eu_Transport,color=dat_bray_N$Treatment))+ 
+  geom_point(size=2, alpha=0.6)+
+  geom_smooth(method="lm",size=1.5)+
+  labs(x=expression(paste("Bray-Curtis Dissimilarity")),
+       y=expression(paste("",""^15,"N enrichment distance")))+
+  theme_bw()+
+  theme(axis.text.y=element_text(size=10,vjust=1,color = "black")) + 
+  theme(axis.text.x=element_text(hjust=1,vjust=1, size=10,color = "black")) +
+  theme(axis.title.x = element_text(size=12, face="bold", vjust=1))+
+  theme(axis.title.y=element_text(size=12, face="bold", vjust=1)) + 
+  theme(legend.title = element_text(colour="black", size=12, face="bold"))+
+  theme(legend.text = element_text(colour = "black",size = 10))+
+  theme(panel.background = element_blank())+
+  scale_color_manual(name= "Treatment", breaks = c("15NH4", "15NO3"),values = c("steelblue","black"),
+                     labels=c(expression(paste("",""^15,"NH"[4]^ +{})), expression(paste("",""^15,"NO"[3]^ -{}))))+
+  guides(colour = guide_legend(override.aes = list(size=5)))
+
+Plot_Transport
+
+Plot_whole <-ggplot(dat_bray_N, aes(x=dat_bray_N$Bray_dis, y=dat_bray_N$Eu_Whole,color=dat_bray_N$Treatment))+ 
+  geom_point(size=2, alpha=0.6)+
+  geom_smooth(method="lm",size=1.5)+
+  labs(x=expression(paste("Bray-Curtis Dissimilarity")),
+       y=expression(paste("",""^15,"N enrichment distance")))+
+  theme_bw()+
+  theme(axis.text.y=element_text(size=10,vjust=1,color = "black")) + 
+  theme(axis.text.x=element_text(hjust=1,vjust=1, size=10,color = "black")) +
+  theme(axis.title.x = element_text(size=12, face="bold", vjust=1))+
+  theme(axis.title.y=element_text(size=12, face="bold", vjust=1)) + 
+  theme(legend.title = element_text(colour="black", size=12, face="bold"))+
+  theme(legend.text = element_text(colour = "black",size = 10))+
+  theme(panel.background = element_blank())+
+  scale_color_manual(name= "Treatment", breaks = c("15NH4", "15NO3"),values = c("steelblue","black"),
+                     labels=c(expression(paste("",""^15,"NH"[4]^ +{})), expression(paste("",""^15,"NO"[3]^ -{}))))+
+  guides(colour = guide_legend(override.aes = list(size=5)))
+
+Plot_whole
+
+##combine plots 
+library(ggplot2)
+library(gridExtra)
+library(grid)
+library(emmeans)
+library(nlme)
+library(ggpubr)
+library(dplyr)
+
+all.plot <- ggarrange(Plot_Transport, Plot_whole, 
+                      labels = c("a)", "b)"),
+                      ncol = 2, nrow = 1, common.legend = TRUE, legend="top", font.label = list(size = 15))
+all.plot
+
+tiff(filename="Bray_curtis vs 15N_without_log.tiff",width=2200,height=1200,res=300)
+all.plot
+dev.off()
 
 ### Supplement Figure S6: plot correlation between measured and calculated 15N in EMRTS #####
 ### used BExIS dataset: 31078, 31080 and 31082
@@ -451,8 +622,8 @@ p_measured_cal <-ggplot(dat, aes(x=dat$X15N_enrichment_EMRTs, y=dat$Total_Effici
              aes(X15N_enrichment_EMRTs, Total_Efficiencies),size=3)+
   geom_smooth(data=subset(dat,dat$Groups=="Measured"),aes(X15N_enrichment_EMRTs, Total_Efficiencies),method="lm",size=1,color="darkgray")+
   # geom_smooth(data=subset(dat,dat$Groups=="Calculated"),aes(X15N_enrichment_EMRTs, Total_Efficiencies),method="lm",size=1,color="red")+
-  labs(x=expression(paste("Measured ",""^15,"N in EM root tips (µg ",g^{-1},"DW)")),
-       y=expression(paste("Calculated ",""^15,"N in EM root tips (µg ",g^{-1},"DW)")))+
+  labs(x=expression(paste("Measured ",""^15,"N enrichment in the mixed EM root tips (µg ",g^{-1},"DW)")),
+       y=expression(paste("Weighted ",""^15,"N enrichment of EM assemblage (µg ",g^{-1},"DW)")))+
   xlim (0,1000)+
   ylim (0,1000)+
   theme_bw()+
@@ -465,16 +636,52 @@ p_measured_cal <-ggplot(dat, aes(x=dat$X15N_enrichment_EMRTs, y=dat$Total_Effici
   guides(colour = guide_legend(override.aes = list(size=8)))+
   theme(legend.text = element_text(colour = "black",size = 12),
         legend.justification=c(1,1), 
-        legend.position=c(0.998, 0.259))+
+        legend.position=c(0.998, 0.219))+
   theme(panel.background = element_blank())+
   scale_color_manual(breaks = c("15NH4", "15NO3"),values = c("steelblue"," black"),labels=c(expression(paste("",""^15,"NH"[4]^ +{})), expression(paste("",""^15,"NO"[3]^ -{}))))
 
 p_measured_cal
 
 # save the p1 plot in a file (run all three lines together)
-tiff(filename="scatter_cal_measured.tiff",width=1800,height=1400,res=300)
+tiff(filename="scatter_cal_measured.tiff",width=1800,height=1600,res=300)
 p_measured_cal
 dev.off()
+
+
+### Figure S6 
+# separately for each treatment group ##### 
+p2<-ggplot(dat_measured, aes(x=dat_measured$X15N_enrichment_EMRTs, y=dat_measured$Total_Efficiencies, color=Treatment))+ 
+  geom_point(size= 2.5)+geom_smooth(method="lm")+
+  labs(x=expression(paste("Measured ",""^15,"N in EM root tips (µg ",g^{-1},"DW)")),
+       y=expression(paste("Calculated ",""^15,"N in EM root tips (µg ",g^{-1},"DW)")))+
+  theme_bw()+
+  theme(strip.text = element_text(size=14, face="bold", color="black"))+
+  #theme(strip.background = element_rect(fill="white"))+
+  theme(axis.text.y=element_text(size=12)) + 
+  theme(axis.text.x=element_text(size=12))+
+  theme(legend.title = element_text(colour="black", size=12, face="bold"))+
+  theme(axis.title.y = element_text(colour = "black",size = 12))+
+  theme(legend.text = element_text(colour = "black",size = 12),
+        legend.justification=c(1,1), 
+        legend.position=c(0.99, 0.235))+
+  #theme(panel.background = element_blank(),panel.grid.major = element_blank(),panel.grid.minor = element_blank())+
+  scale_color_manual(breaks = c("15NH4", "15NO3"),values = c("steelblue"," black"),labels=c(expression(paste("",""^15,"NH"[4]^ +{})), expression(paste("",""^15,"NO"[3]^ -{}))))
+# plot the "p1" object
+p2
+
+
+# save the p1 plot in a file (run all three lines together)
+tiff(filename="Figure_S6_additional.tiff",width=1600,height=1400,res=300)
+p2
+dev.off()
+
+## statistics figure S6 
+Amm <- dat_measured[dat_measured$Treatment == "15NH4",]
+Nit <- dat_measured[dat_measured$Treatment == "15NO3",]
+
+cor.test(Amm$X15N_enrichment_EMRTs, Amm$Total_Efficiencies) # t = 6.7451, df = 60, p-value = 6.796e-09, r = 0.6567054
+cor.test(Nit$X15N_enrichment_EMRTs, Nit$Total_Efficiencies) # t = 3.0332, df = 58, p-value = 0.003616, r = 0.3700164
+
 
 ### Table 1 ####
 ### used BExIS dataset: 31079
@@ -582,7 +789,7 @@ cld(glhtlme_eveness)
 ### used BExIS dataset: 31079 and 31080
 
 ##load the data 
-dat<-read.table(file="15N_dataset_review.txt",head=T,sep="\t")
+dat<-read.table(file="15N_dataset_review.txt",head=T,sep="\t",fileEncoding = "Latin1")
 
 #Treatment groups: 15NH4, 15NO3 
 Ammonium <-dat[dat$Treatment=="15NH4",]
@@ -756,6 +963,8 @@ anova(lmer_Transport1)
 ### used BExIS dataset: 31082
 rm(list=ls())
 df<-read.table(file="15N in EM Fungi speceis.txt",head=T,sep="\t")
+
+
 head(df)
 str(df)
 
@@ -773,15 +982,15 @@ Sp_nit<-df[100:197,]
 
 ##NH4 
 lme1<-lmer(data=Sp_amm,log(Sp_amm$X15N.enrichment_MT)~EMF.species+(1|Plot)+(1|Sites))
-anova(lme1)
+anova(lme1) # F = 54.79, p <0.001
 
 #NO3 
 lme2<-lmer(data=Sp_nit,log(X15N.enrichment_MT)~EMF.species+(1|Plot)+(1|Sites))
-anova(lme2)
+anova(lme2) # F = 43.12, p  = 0.022
 
 ####interaction between treatment 
 lmer1<-lmer(data=Sp,log(Sp$X15N.enrichment_MT)~Sp$Treatment+(1|Plot)+(1|Sites))
-anova(lmer1)
+anova(lmer1) # F = 120.51, p <0.001
 
 ####EM fungi in Summer
 Su<-df[198:309,] 
@@ -790,15 +999,15 @@ Su_nit<-df[255:309,]
 
 ##NH4 
 lme3<-lmer(data=Su_amm,log(X15N.enrichment_MT)~EMF.species+(1|Plot)+(1|Sites))
-anova(lme3)
+anova(lme3) # F = 254.92, p <0.001
 
 #NO3 
 lme4<-lmer(data=Su_nit,log(X15N.enrichment_MT)~EMF.species+(1|Plot)+(1|Sites))
-anova(lme4)
+anova(lme4) # F = 526.18, p <0.001
 
 ###interaction 
 lmer11<-lmer(data=Su,log(X15N.enrichment_MT)~Treatment+(1|Plot)+(1|Sites))
-anova(lmer11)
+anova(lmer11) # F = 320.32, p <0.001
 
 ####EM fungi in autumn
 Au_amm<-df[310:413,] 
@@ -807,15 +1016,16 @@ Au<-df[310:488,]
 
 ##NH4 
 lme5<-lmer(data=Au_amm,log(X15N.enrichment_MT)~EMF.species+(1|Plot)+(1|Sites))
-anova(lme5)
+anova(lme5) # F = 17.12, p <0.001
 
 #NO3 
 lme6<-lmer(data=Au_nit,log(X15N.enrichment_MT)~EMF.species+(1|Plot)+(1|Sites))
-anova(lme6)
+anova(lme6) # F = 7.94, p <0.001
 
 ####interaction between treatment 
 lme2<-lmer(data=Au,log(X15N.enrichment_MT)~Treatment+(1|Plot)+(1|Sites))
-anova(lme2)
+anova(lme2) # F = 286.18, p <0.001
+
 
 ### Supplement table S3 ####
 ### used BExIS dataset: 31082
@@ -833,37 +1043,53 @@ library(plyr)
 
 ### Data read 
 rm(list=ls())
-meta_EMF<-read.table(file="Env variables in ECMF Speceis.txt",head=T,sep="\t")
+meta_EMF<-read.table(file="15N_enrichment_EMF_after removed absence2.txt",head=T,sep="\t")
+
 
 ###Lock the factors, meaning i want the order as it is in the data file 
-meta_EMF$Harvest.season <- factor(meta_EMF$Harvest.season, levels= unique(meta_EMF$Harvest.season), ordered=TRUE)
-meta_EMF$EMF.species <- factor(meta_EMF$EMF.species, levels= unique(meta_EMF$EMF.species), ordered=TRUE)
+meta_EMF$Season <- factor(meta_EMF$Season, levels= unique(meta_EMF$Season), ordered=TRUE)
+meta_EMF$Species <- factor(meta_EMF$Species, levels= unique(meta_EMF$Species), ordered=TRUE)
 
 # Calc SEM  
-means.sem1 <- ddply(meta_EMF, c("EMF.species","Harvest.season"), summarise,
-                    mean=mean(X13C.12C), sem=sd(X13C.12C)/sqrt(length(X13C.12C)))
-means.sem2 <- ddply(meta_EMF, c("EMF.species","Harvest.season"), summarise,
-                    mean=mean(C.amount), sem=sd(C.amount)/sqrt(length(C.amount)))
+means.sem_APE <- ddply(meta_EMF, c("Species","Season","Treatment"), summarise,
+                       mean=mean(APE), sem=sd(APE)/sqrt(length(APE)))
 
-means.sem3 <- ddply(meta_EMF, c("EMF.species","Harvest.season"), summarise,
-                    mean=mean(N.amount), sem=sd(N.amount)/sqrt(length(N.amount)))
+means.sem_13C <- ddply(meta_EMF, c("Species","Season"), summarise,
+                       mean=mean(X13.12C), sem=sd(X13.12C)/sqrt(length(X13.12C)))
 
-means.sem4 <- ddply(meta_EMF, c("EMF.species","Harvest.season"), summarise,
-                    mean=mean(C.N), sem=sd(C.N)/sqrt(length(C.N)))
+means.sem_C <- ddply(meta_EMF, c("Species","Season"), summarise,
+                     mean=mean(C), sem=sd(C)/sqrt(length(C)))
 
-means.sem5 <- ddply(meta_EMF, c("EMF.species","Harvest.season"), summarise,
-                    mean=mean(Enrichment), sem=sd(Enrichment)/sqrt(length(Enrichment)))
+means.sem_N <- ddply(meta_EMF, c("Species","Season"), summarise,
+                     mean=mean(N), sem=sd(N)/sqrt(length(N)))
+
+means.sem_CN <- ddply(meta_EMF, c("Species","Season"), summarise,
+                      mean=mean(CN), sem=sd(CN)/sqrt(length(CN)))
+
+All_summary_APE <- summarySE(meta_EMF, measurevar="APE", groupvars=c("Species","Treatment","Season"))
+All_summary_13C <- summarySE(meta_EMF, measurevar="X13.12C", groupvars=c("Species","Season"))
+All_summary_C <- summarySE(meta_EMF, measurevar="C", groupvars=c("Species","Season"))
+All_summary_N <- summarySE(meta_EMF, measurevar="N", groupvars=c("Species","Season"))
+All_summary_CN <- summarySE(meta_EMF, measurevar="CN", groupvars=c("Species","Season"))
+
 ###Write csv table 
-write.csv(means.sem1,file = "13C in ECMF.csv")
-write.csv(means.sem2,file = "C amount in ECMF.csv")
-write.csv(means.sem3,file = "N amount in ECMF.csv")
-write.csv(means.sem4,file = "CN ratio in ECMF.csv")
-write.csv(means.sem5,file = "15N enrichment in ECMF.csv")
+write.csv(means.sem_APE,file = "APE in ECMF.csv")
+write.csv(means.sem_13C,file = "13C in ECMF.csv")
+write.csv(means.sem_C,file = "C amount in ECMF.csv")
+write.csv(means.sem_N,file = "N amount in ECMF.csv")
+write.csv(means.sem_CN,file = "CN ratio in ECMF.csv")
+
+write.csv(All_summary_APE,file = "APE.csv")
+write.csv(All_summary_13C,file = "13C.csv")
+write.csv(All_summary_C,file = "C.csv")
+write.csv(All_summary_N,file = "N.csv")
+write.csv(All_summary_CN,file = "CN.csv")
+
 
 #Significance test of the meta /env data 
-SP<-(meta_EMF[1:197,])
-SU<-(meta_EMF[198:309,])
-AU<-(meta_EMF[310:488,])
+SP<- meta_EMF[meta_EMF$Season =="Spring",]
+SU<-meta_EMF[meta_EMF$Season =="Summer",]
+AU<-meta_EMF[meta_EMF$Season =="Autumn",]
 
 library(car)
 library(lme4)
@@ -873,54 +1099,45 @@ library(multcompView)
 library(vegan)
 library(betareg)
 
-All<-read.table(file="15N_enrichment_EMF.txt",head=T,sep="\t")
-SP<-(All[1:197,])
-SU<-(All[198:309,])
-AU<-(All[310:488,])
-
-library(car)
-library(lme4)
-library(lmerTest)
-library(multcomp)
-library(multcompView)
-library(vegan)
-library(betareg)
 
 ##Spring
-lme_SP_C<-lmer(data=SP,log(SP$C_EMF)~SP$Species+(1|Plot))
-lme_SP_N<-lmer(data=SP,log(SP$N_EMF)~SP$Species+(1|Plot))
-lme_SP_CN<-lmer(data=SP,log(SP$CN)~SP$Species+(1|Plot))
-lme_13C<-lmer(data=SP,SP$DELTA.13.12C_EMF~SP$Species+(1|Plot))
-lm_13C<-lm(data=SP,SP$DELTA.13.12C_EMF~SP$Species)
 
+lme_SP_C<-lmer(data=SP,log(SP$C)~SP$Species+(1|Plot))
+lme_SP_N<-lmer(data=SP,log(SP$N)~SP$Species+(1|Plot))
+lme_SP_CN<-lmer(data=SP,log(SP$CN)~SP$Species+(1|Plot))
+lme_13C<-lmer(data=SP,SP$X13.12C~SP$Species+(1|Plot))
+
+anova(lme_13C)
 anova(lme_SP_C)
 anova(lme_SP_N)
 anova(lme_SP_CN)
-anova(lme_13C)
+
 
 #Summer
-lme_SU_C<-lmer(data=SU,log(SU$C_EMF)~SU$Species+(1|Plot))
-lme_SU_N<-lmer(data=SU,log(SU$N_EMF)~SU$Species+(1|Plot))
+lme_SU_C<-lmer(data=SU,log(SU$C)~SU$Species+(1|Plot))
+lme_SU_N<-lmer(data=SU,log(SU$N)~SU$Species+(1|Plot))
 lme_SU_CN<-lmer(data=SU,log(SU$CN)~SU$Species+(1|Plot))
-lme_SU_13C<-lmer(data=SU,SU$DELTA.13.12C_EMF~SU$Species+(1|Plot))
-lm_SU_13C<-lm(data=SU,SU$DELTA.13.12C_EMF~SU$Species)
+lme_SU_13C<-lmer(data=SU,SU$X13.12C~SU$Species+(1|Plot))
 
+
+anova(lme_SU_13C)
 anova(lme_SU_C)
 anova(lme_SU_N)
 anova(lme_SU_CN)
-anova(lme_SU_13C)
+
 
 #Autumn 
-lme_AU_C<-lmer(data=AU,log(AU$C_EMF)~AU$Species+(1|Plot))
-lme_AU_N<-lmer(data=AU,log(AU$N_EMF)~AU$Species+(1|Plot))
+lme_AU_C<-lmer(data=AU,log(AU$C)~AU$Species+(1|Plot))
+lme_AU_N<-lmer(data=AU,log(AU$N)~AU$Species+(1|Plot))
 lme_AU_CN<-lmer(data=AU,log(AU$CN)~AU$Species+(1|Plot))
-lme_AU_13C<-lmer(data=AU,AU$DELTA.13.12C_EMF~AU$Species+(1|Plot))
-lm_AU_13C<-lm(data=AU,AU$DELTA.13.12C_EMF~AU$Species)
+lme_AU_13C<-lmer(data=AU,AU$X13.12C~AU$Species+(1|Plot))
 
+
+anova(lme_AU_13C)
 anova(lme_AU_C)
 anova(lme_AU_N)
 anova(lme_AU_CN)
-anova(lme_AU_13C)
+
 
 ##15NH4 
 SP_NH4 <-(SP[SP$Treatment=="15NH4",])
@@ -932,18 +1149,20 @@ SU_NO3 <-(SU[SU$Treatment=="15NO3",])
 AU_NH4 <-(AU[AU$Treatment=="15NH4",])
 AU_NO3 <-(AU[AU$Treatment=="15NO3",])
 
-Sp_15NH4 <-lmer(data=SP_NH4,SP_NH4$Atom_15N_EMF~SP_NH4$Species+(1|Plot))
-Sp_15NO3 <-lmer(data=SP_NO3,SP_NO3$Atom_15N_EMF~SP_NO3$Species+(1|Plot))
+Sp_15NH4 <-lmer(data=SP_NH4,SP_NH4$APE~SP_NH4$Species+(1|Plot))
+Sp_15NO3 <-lmer(data=SP_NO3,SP_NO3$APE~SP_NO3$Species+(1|Plot))
 anova(Sp_15NH4)
 anova(Sp_15NO3)
 
-SU_15NH4 <-lmer(data=SU_NH4,SU_NH4$Atom_15N_EMF~SU_NH4$Species+(1|Plot))
-SU_15NO3 <-lmer(data=SU_NO3,SU_NO3$Atom_15N_EMF~SU_NO3$Species+(1|Plot))
+SU_15NH4 <-lmer(data=SU_NH4,SU_NH4$APE~SU_NH4$Species+(1|Plot))
+SU_15NO3 <-lmer(data=SU_NO3,SU_NO3$APE~SU_NO3$Species+(1|Plot))
 anova(SU_15NH4)
 anova(SU_15NO3)
 
-AU_15NH4 <-lmer(data=AU_NH4,AU_NH4$Atom_15N_EMF~AU_NH4$Species+(1|Plot))
-AU_15NO3 <-lmer(data=AU_NO3,AU_NO3$Atom_15N_EMF~AU_NO3$Species+(1|Plot))
+
+
+AU_15NH4 <-lmer(data=AU_NH4,AU_NH4$APE~AU_NH4$Species+(1|Plot))
+AU_15NO3 <-lmer(data=AU_NO3,AU_NO3$APE~AU_NO3$Species+(1|Plot))
 anova(AU_15NH4)
 anova(AU_15NO3)
 
@@ -1248,120 +1467,7 @@ anova(lme_Transport_13C)
 anova(lm_Transport_AM)
 anova(lm_Transport_Ni)
 
-## Additional Figures ####
-##calculate Bray Curtis dissimilarity ####
-### used BExIS dataset: 31078 and 31080
-library (vegan)
-##load data
-dat<-read.table(file="15N_dataset_review.txt",head=T,sep="\t",fileEncoding = "Latin1")
 
-##EM community data 
-data_comm <-dat[,62:114] # subset: only the fungi count data
-
-#Treatment groups: 15NH4, 15NO3 
-Ammonium <-dat[dat$Treatment=="15NH4",]
-Nitrate <-dat[dat$Treatment=="15NO3",]
-
-Amm_abund <- decostand (Ammonium[,62:114], method = 'hellinger')
-Nit_abund <- decostand (Nitrate[,62:114], method = 'hellinger')
-
-#abundance data frame - bray curtis dissimilarity
-Amm.dist.abund = vegdist(Amm_abund, method = "bray")
-Amm.abund = as.vector(Amm.dist.abund)
-write.csv(Amm.abund,"Bray_curtis_dis_Amm_abund.csv")
-
-Nit.dist.abund = vegdist(Nit_abund, method = "bray")
-Nit.abund = as.vector(Nit.dist.abund)
-write.csv(Nit.abund,"Bray_curtis_dis_Nit_abund.csv")
-
-#environmental vector - euclidean distance
-Amm.dist.transport = vegdist(Ammonium$Transport_15N.enrichment, method = "euclidean")
-A_T = as.vector(Amm.dist.transport)
-write.csv(A_T,"Bray_curtis_dis_A_T.csv")
-
-Amm.dist.whole = vegdist(Ammonium$Whole.root_N.uptake, method = "euclidean")
-A_whole = as.vector(Amm.dist.whole)
-write.csv(A_whole,"Bray_curtis_dis_A_whole.csv")
-
-Nit.dist.transport = vegdist(Nitrate$Transport_15N.enrichment, method = "euclidean")
-N_T = as.vector(Nit.dist.transport)
-write.csv(N_T,"Bray_curtis_dis_N_T_log.csv")
-
-Nit.dist.whole = vegdist(Nitrate$Whole.root_N.uptake, method = "euclidean")
-N_whole = as.vector(Nit.dist.whole)
-write.csv(N_whole,"Bray_curtis_dis_N_whole.csv")
-
-#Ammonium and nitrate abundance vs n uptake  
-abund_A_T = mantel(Amm.dist.transport, Amm.dist.abund, method = "spearman", permutations = 9999, na.rm = TRUE)
-abund_A_T
-
-abund_A_whole = mantel(Amm.dist.whole, Amm.dist.abund, method = "spearman", permutations = 9999, na.rm = TRUE)
-abund_A_whole
-
-abund_N_T = mantel(Nit.dist.transport, Nit.dist.abund, method = "spearman", permutations = 9999, na.rm = TRUE)
-abund_N_T
-
-abund_N_whole = mantel(Nit.dist.whole, Nit.dist.abund, method = "spearman", permutations = 9999, na.rm = TRUE)
-abund_N_whole
-
-##plot Bray-Curtis Dissimilarity and 15N enrichment distance ####
-dat_bray_N <-read.table(file="Bray_N_uptake.txt",head=T,sep="\t")
-
-Plot_Transport <-ggplot(dat_bray_N, aes(x=dat_bray_N$Bray_dis, y=dat_bray_N$Eu_Transport,color=dat_bray_N$Treatment))+ 
-  geom_point(size=2, alpha=0.6)+
-  geom_smooth(method="lm",size=1.5)+
-  labs(x=expression(paste("Bray-Curtis Dissimilarity")),
-       y=expression(paste("",""^15,"N enrichment distance")))+
-  theme_bw()+
-  theme(axis.text.y=element_text(size=10,vjust=1,color = "black")) + 
-  theme(axis.text.x=element_text(hjust=1,vjust=1, size=10,color = "black")) +
-  theme(axis.title.x = element_text(size=12, face="bold", vjust=1))+
-  theme(axis.title.y=element_text(size=12, face="bold", vjust=1)) + 
-  theme(legend.title = element_text(colour="black", size=12, face="bold"))+
-  theme(legend.text = element_text(colour = "black",size = 10))+
-  theme(panel.background = element_blank())+
-  scale_color_manual(name= "Treatment", breaks = c("15NH4", "15NO3"),values = c("steelblue","black"),
-                     labels=c(expression(paste("",""^15,"NH"[4]^ +{})), expression(paste("",""^15,"NO"[3]^ -{}))))+
-  guides(colour = guide_legend(override.aes = list(size=5)))
-
-Plot_Transport
-
-Plot_whole <-ggplot(dat_bray_N, aes(x=dat_bray_N$Bray_dis, y=dat_bray_N$Eu_Whole,color=dat_bray_N$Treatment))+ 
-  geom_point(size=2, alpha=0.6)+
-  geom_smooth(method="lm",size=1.5)+
-  labs(x=expression(paste("Bray-Curtis Dissimilarity")),
-       y=expression(paste("",""^15,"N enrichment distance")))+
-  theme_bw()+
-  theme(axis.text.y=element_text(size=10,vjust=1,color = "black")) + 
-  theme(axis.text.x=element_text(hjust=1,vjust=1, size=10,color = "black")) +
-  theme(axis.title.x = element_text(size=12, face="bold", vjust=1))+
-  theme(axis.title.y=element_text(size=12, face="bold", vjust=1)) + 
-  theme(legend.title = element_text(colour="black", size=12, face="bold"))+
-  theme(legend.text = element_text(colour = "black",size = 10))+
-  theme(panel.background = element_blank())+
-  scale_color_manual(name= "Treatment", breaks = c("15NH4", "15NO3"),values = c("steelblue","black"),
-                     labels=c(expression(paste("",""^15,"NH"[4]^ +{})), expression(paste("",""^15,"NO"[3]^ -{}))))+
-  guides(colour = guide_legend(override.aes = list(size=5)))
-
-Plot_whole
-
-##combine plots 
-library(ggplot2)
-library(gridExtra)
-library(grid)
-library(emmeans)
-library(nlme)
-library(ggpubr)
-library(dplyr)
-
-all.plot <- ggarrange(Plot_Transport, Plot_whole, 
-                      labels = c("a)", "b)"),
-                      ncol = 2, nrow = 1, common.legend = TRUE, legend="top", font.label = list(size = 15))
-all.plot
-
-tiff(filename="Bray_curtis vs 15N_without_log.tiff",width=2200,height=1200,res=300)
-all.plot
-dev.off()
 
 ### Additional analysis 
 ### correlation EMF_ammonium vs nitrate enrichment#### 
@@ -1409,4 +1515,3 @@ dev.off()
 
 
 #### THE END #### 
-
