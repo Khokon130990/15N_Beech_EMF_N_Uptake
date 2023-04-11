@@ -1,10 +1,10 @@
-#### R_script_15N_Manuscript - "Ectomycorrhizal diversity, taxon-specific traits and root N uptake in temperate beech forests"
+#### R_script_15N_Manuscript - "Ectomycorrhizal diversity overtops taxon-specific traits for N uptake in temperate beech forests"
 # Anis Mahmud Khokon1,2, Dennis Janz1 and Andrea Polle1* 
 # 1Forest Botany and Tree Physiology, University of Göttingen, Göttingen, Germany
 # 2Functional Forest Ecology, Universität Hamburg, Barsbüttel 22885, Germany
 
 ## setting up the working directory
-setwd("C:/Users/khokon/Desktop/15N_revision_2nd round/GitHub_Anis_Khokon")
+setwd("C:/Users/khokon/Desktop/15N/GitHub_Anis_Khokon")
 rm(list=ls())
 
 ## load packages 
@@ -79,9 +79,9 @@ all.plot <- ggarrange(AM_plot, NI_plot,
                       ncol = 2, nrow = 1, legend="none", font.label = list(size = 15))
 all.plot
 
-#tiff(filename="v3_Repeated for paper_15N in different root segments v3.tiff",width=2200,height=1000,res=300)
-#all.plot
-#dev.off()
+tiff(filename="Figure 01.tiff",width=2200,height=1000,res=300)
+all.plot
+dev.off()
 
 #### Figure 2 : 15N enrichment in EMF species ##### 
 ### used BExIS dataset: 31082
@@ -105,7 +105,7 @@ All<-read.table(file="15N_enrichment_EMF_revision_2nd.txt",head=T,sep="\t")
 
 All_summary <- summarySE(All, measurevar="Enrichment_EMF", groupvars=c("Species","Treatment","Season"))
 
-#write.csv(All_summary,file = "mean_15N_enrichment_ECMF.csv")
+write.csv(All_summary,file = "mean_15N_enrichment_ECMF.csv")
 
 ###Lock the factors, meaning i want the order as it is in the data file 
 All$Treatment <- factor(All$Treatment, levels= unique(All$Treatment), ordered=TRUE)
@@ -154,9 +154,9 @@ p1<-plotSEM+
   theme(panel.background = element_blank(),panel.grid.minor = element_blank())
 p1
 
-#tiff(filename="Figure 02.tiff",width=4000,height=3500,res=300)
-#p1 
-#dev.off()
+tiff(filename="Figure 02.tiff",width=4000,height=3500,res=300)
+p1 
+dev.off()
 
 
 ### Figure 3: EM diversity and N uptake ####
@@ -232,9 +232,9 @@ all.plot
 
 
 # save the p1 plot in a file (run all three lines together)
-#tiff(filename="cor_transport and entire root systems.tiff",width=2500,height=1200,res=300)
-#all.plot
-#dev.off()
+tiff(filename="Figure 03.tiff",width=2500,height=1200,res=300)
+all.plot
+dev.off()
 
 # Figure 3. correlation statistics #
 ##transport root  
@@ -1515,3 +1515,4 @@ dev.off()
 
 
 #### THE END #### 
+
